@@ -147,17 +147,60 @@ def test_user_login():
     """Test user login for all registered users"""
     print("\n=== Testing User Login ===")
     
-    for role, user_info in test_users.items():
-        if "credentials" in user_info:
-            response = make_request("POST", "/login", user_info["credentials"])
-            if response and response.status_code == 200:
-                login_data = response.json()
-                test_users[role]["token"] = login_data["access_token"]
-                test_users[role]["user_info"] = login_data["user"]
-                results.log_success(f"{role.title()} Login")
-            else:
-                error_msg = response.json().get("detail", "Unknown error") if response else "No response"
-                results.log_failure(f"{role.title()} Login", f"Status: {response.status_code if response else 'None'}, Error: {error_msg}")
+    # First login as member (auto-approved)
+    if "member" in test_users and "credentials" in test_users["member"]:
+        response = make_request("POST", "/login", test_users["member"]["credentials"])
+        if response and response.status_code == 200:
+            login_data = response.json()
+            test_users["member"]["token"] = login_data["access_token"]
+            test_users["member"]["user_info"] = login_data["user"]
+            results.log_success("Member Login")
+        else:
+            error_msg = response.json().get("detail", "Unknown error") if response else "No response"
+            results.log_failure("Member Login", f"Status: {response.status_code if response else 'None'}, Error: {error_msg}")
+    
+    # Try to login admin first to approve trainer
+    if "admin" in test_users and "credentials" in test_users["admin"]:
+        response = make_request("POST", "/login", test_users["admin"]["credentials"])
+        if response and response.status_code == 200:
+            login_data = response.json()
+            test_users["admin"]["token"] = login_data["access_token"]
+            test_users["admin"]["user_info"] = login_data["user"]
+            results.log_success("Admin Login")
+            
+            # Now approve trainer if admin login successful
+            if "trainer" in test_users and "data" in test_users["trainer"]:
+                trainer_id = test_users["trainer"]["data"]["id"]
+                admin_token = test_users["admin"]["token"]
+                approve_response = make_request("PUT", f"/users/{trainer_id}/approve", token=admin_token)
+                if approve_response and approve_response.status_code == 200:
+                    print("   ✓ Trainer approved by admin")
+                    
+                    # Now try trainer login
+                    response = make_request("POST", "/login", test_users["trainer"]["credentials"])
+                    if response and response.status_code == 200:
+                        login_data = response.json()
+                        test_users["trainer"]["token"] = login_data["access_token"]
+                        test_users["trainer"]["user_info"] = login_data["user"]
+                        results.log_success("Trainer Login (after approval)")
+                    else:
+                        error_msg = response.json().get("detail", "Unknown error") if response else "No response"
+                        results.log_failure("Trainer Login (after approval)", f"Status: {response.status_code if response else 'None'}, Error: {error_msg}")
+        else:
+            error_msg = response.json().get("detail", "Unknown error") if response else "No response"
+            results.log_failure("Admin Login", f"Status: {response.status_code if response else 'None'}, Error: {error_msg}")
+            
+            # Try trainer login anyway (will likely fail due to approval)
+            if "trainer" in test_users and "credentials" in test_users["trainer"]:
+                response = make_request("POST", "/login", test_users["trainer"]["credentials"])
+                if response and response.status_code == 200:
+                    login_data = response.json()
+                    test_users["trainer"]["token"] = login_data["access_token"]
+                    test_users["trainer"]["user_info"] = login_data["user"]
+                    results.log_success("Trainer Login")
+                else:
+                    error_msg = response.json().get("detail", "Unknown error") if response else "No response"
+                    results.log_failure("Trainer Login", f"Status: {response.status_code if response else 'None'}, Error: {error_msg} (likely needs approval)")
 
 def test_user_management():
     """Test user management APIs (admin only)"""
