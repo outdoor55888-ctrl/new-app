@@ -241,7 +241,7 @@ async def register(user_data: UserCreate):
         full_name=user_data.full_name,
         role=user_data.role,
         phone=user_data.phone,
-        is_approved=user_data.role == UserRole.MEMBER  # Auto-approve members
+        is_approved=user_data.role in [UserRole.MEMBER, UserRole.ADMIN]  # Auto-approve members and admins
     )
     
     user_dict = user.dict()
