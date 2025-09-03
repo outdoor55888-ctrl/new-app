@@ -60,20 +60,22 @@ def make_request(method, endpoint, data=None, headers=None, token=None):
         request_headers["Authorization"] = f"Bearer {token}"
     
     try:
+        print(f"   Making {method} request to: {url}")
         if method == "GET":
-            response = requests.get(url, headers=request_headers, timeout=30)
+            response = requests.get(url, headers=request_headers, timeout=60)
         elif method == "POST":
-            response = requests.post(url, json=data, headers=request_headers, timeout=30)
+            response = requests.post(url, json=data, headers=request_headers, timeout=60)
         elif method == "PUT":
-            response = requests.put(url, json=data, headers=request_headers, timeout=30)
+            response = requests.put(url, json=data, headers=request_headers, timeout=60)
         elif method == "DELETE":
-            response = requests.delete(url, headers=request_headers, timeout=30)
+            response = requests.delete(url, headers=request_headers, timeout=60)
         else:
             raise ValueError(f"Unsupported method: {method}")
             
+        print(f"   Response status: {response.status_code}")
         return response
     except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
+        print(f"   Request failed: {e}")
         return None
 
 def test_user_registration():
