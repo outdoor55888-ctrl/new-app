@@ -512,9 +512,9 @@ def test_unauthorized_access():
     
     # Test accessing protected endpoint without token
     response = make_request("GET", "/users")
-    if response and response.status_code in [401, 403]:  # Both are valid for unauthorized access
+    if response is not None and response.status_code in [401, 403]:  # Both are valid for unauthorized access
         results.log_success("Unauthorized Access Blocked")
-    elif response:
+    elif response is not None:
         results.log_failure("Unauthorized Access Blocked", f"Expected 401 or 403, got {response.status_code}")
     else:
         results.log_failure("Unauthorized Access Blocked", "No response received")
