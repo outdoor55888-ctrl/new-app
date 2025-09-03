@@ -96,7 +96,7 @@ def test_user_registration():
     }
     
     response = make_request("POST", "/register", member_data)
-    if response and response.status_code == 200:
+    if response is not None and response.status_code == 200:
         user_data = response.json()
         test_users["member"] = {
             "data": user_data,
@@ -104,8 +104,8 @@ def test_user_registration():
         }
         results.log_success("Member Registration")
     else:
-        error_msg = response.json().get("detail", "Unknown error") if response and response.text else "No response"
-        results.log_failure("Member Registration", f"Status: {response.status_code if response else 'None'}, Error: {error_msg}")
+        error_msg = response.json().get("detail", "Unknown error") if response is not None and response.text else "No response"
+        results.log_failure("Member Registration", f"Status: {response.status_code if response is not None else 'None'}, Error: {error_msg}")
     
     # Test trainer registration
     trainer_data = {
