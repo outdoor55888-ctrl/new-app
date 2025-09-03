@@ -125,7 +125,7 @@ def test_user_registration():
         }
         results.log_success("Trainer Registration")
     else:
-        error_msg = response.json().get("detail", "Unknown error") if response else "No response"
+        error_msg = response.json().get("detail", "Unknown error") if response and response.text else "No response"
         results.log_failure("Trainer Registration", f"Status: {response.status_code if response else 'None'}, Error: {error_msg}")
     
     # Test admin registration
