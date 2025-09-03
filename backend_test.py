@@ -82,9 +82,13 @@ def test_user_registration():
     """Test user registration for different roles"""
     print("\n=== Testing User Registration ===")
     
+    # Generate unique timestamp for emails
+    import time
+    timestamp = str(int(time.time()))
+    
     # Test member registration
     member_data = {
-        "email": "sarah.johnson@email.com",
+        "email": f"sarah.johnson.{timestamp}@email.com",
         "password": "FitnessLife2024!",
         "full_name": "Sarah Johnson",
         "role": "member",
@@ -105,7 +109,7 @@ def test_user_registration():
     
     # Test trainer registration
     trainer_data = {
-        "email": "mike.trainer@email.com",
+        "email": f"mike.trainer.{timestamp}@email.com",
         "password": "TrainerPro2024!",
         "full_name": "Mike Rodriguez",
         "role": "trainer",
@@ -126,7 +130,7 @@ def test_user_registration():
     
     # Test admin registration
     admin_data = {
-        "email": "admin.supreme@email.com",
+        "email": f"admin.supreme.{timestamp}@email.com",
         "password": "AdminSupreme2024!",
         "full_name": "Alex Supreme",
         "role": "admin",
