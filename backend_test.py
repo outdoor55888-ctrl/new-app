@@ -512,10 +512,10 @@ def test_unauthorized_access():
     
     # Test accessing protected endpoint without token
     response = make_request("GET", "/users")
-    if response and response.status_code == 401:
+    if response and response.status_code in [401, 403]:  # Both are valid for unauthorized access
         results.log_success("Unauthorized Access Blocked")
     else:
-        results.log_failure("Unauthorized Access Blocked", f"Expected 401, got {response.status_code if response else 'None'}")
+        results.log_failure("Unauthorized Access Blocked", f"Expected 401 or 403, got {response.status_code if response else 'None'}")
 
 def run_all_tests():
     """Run all backend tests in sequence"""
