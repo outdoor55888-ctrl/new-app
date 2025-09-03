@@ -515,7 +515,8 @@ def test_unauthorized_access():
     if response and response.status_code in [401, 403]:  # Both are valid for unauthorized access
         results.log_success("Unauthorized Access Blocked")
     else:
-        results.log_failure("Unauthorized Access Blocked", f"Expected 401 or 403, got {response.status_code if response else 'None'}")
+        status_code = response.status_code if response else "No response"
+        results.log_failure("Unauthorized Access Blocked", f"Expected 401 or 403, got {status_code}")
 
 def run_all_tests():
     """Run all backend tests in sequence"""
